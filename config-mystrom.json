@@ -1,0 +1,22 @@
+{
+  "mystrom": {
+    "cloud": {
+      "readme": "not yet implemented",
+      "endpoint": "https://www.mystrom.ch/mobile/"
+    },
+    "devices": [
+      {
+        "id": "switch-office",
+        "name": "Office",
+        "type": "switch",
+        "host": "myStrom-Switch-000001"
+      },
+      {
+        "id": "switch-tv",
+        "name": "TV",
+        "type": "switch",
+        "host": "myStrom-Switch-000002"
+      }
+    ]
+  }
+}

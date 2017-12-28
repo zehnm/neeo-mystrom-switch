@@ -1,0 +1,33 @@
+{
+  "name": "neeo-mystrom-switch",
+  "version": "0.0.1",
+  "description": "This driver adds myStrom WiFi Switch support to NEEO",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "neeo-sdk": "*",
+    "request": "^2.83.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zehnm/neeo-mystrom-switch.git"
+  },
+  "keywords": [
+    "myStrom",
+    "WiFi Switch",
+    "Server",
+    "NEEO"
+  ],
+  "author": "Markus Zehnder",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zehnm/neeo-mystrom-switch/issues"
+  },
+  "homepage": "https://github.com/zehnm/neeo-mystrom-switch"
+}
