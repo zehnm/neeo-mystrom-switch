@@ -17,7 +17,7 @@ Tested with:
  - Also works with my [Raspberry Pi power switch](https://github.com/zehnm/pi-power-switch)
 
 ### TODO
- - auto discovery feature
+ - auto discovery feature - will be implemented soon™
  - option to use myStrom cloud (either for initial discovery only or for full device access)
  - setting device reachability flag with connectivity test
  - improved error & auto retry handling
@@ -52,12 +52,18 @@ npm install
 
 **Edit the config-mystrom.json file to configure myStrom devices**
  - mystrom.devices : array of WiFi Switch configurations:
-   - id : unique device ID (e.g. switch-1, switch-2, ...)
+   - id : unique device ID
+
+     MAC address should be used for future auto-discovery feature (e.g. 30aea400112233) to support id -> name mapping
+
    - name : displayed name in NEEO
    - type : static value "switch"
+
+     Every other value will be ignored, i.e. setting another name disables the device.
+
    - host : IP or host name with optional port number
 
-     MAC address is not yet supported. Assigning a static IP in your router is recommended.
+     Assigning a static IP lease in your router is recommended.
 
 ## Start the driver
 
