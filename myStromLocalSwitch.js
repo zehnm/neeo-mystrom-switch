@@ -21,19 +21,19 @@ class MyStromLocalSwitch {
 
   getState() {
     return new BluePromise((resolve, reject) => {
-      let deviceId = this.id;
+      var self = this;
       request("http://" + this.host + "/report", function (error, response, body) {
         if (error) {
-          console.log('[MyStromSwitch] Error getting state %s: %s', deviceId, error);
+          console.log('[MyStromSwitch] Error getting state %s: %s', self.id, error);
           reject(error);
         } else if (response.statusCode !== 200) {
-          reject(new Error('INVALID_ANSWER from ' + deviceId + ': ' + response.statusCode + ' ' + response.statusMessage));
+          reject(new Error('INVALID_ANSWER from ' + self.id + ': ' + response.statusCode + ' ' + response.statusMessage));
         } else {
           var result = JSON.parse(body);
           if (result.hasOwnProperty('power') && result.power != 0) {
             result.power = result.power.toFixed(1);
           }
-          console.log('[MyStromSwitch] %s state: %s, %s W', deviceId, result.relay === true ? 'On' : 'Off', result.power);
+          console.log('[MyStromSwitch] %s state: %s, %s W', self.id, result.relay === true ? 'On' : 'Off', result.power);
           resolve(result);
         }
       });
