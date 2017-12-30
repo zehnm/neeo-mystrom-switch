@@ -1,45 +1,56 @@
 'use strict';
-
-/*
- * Auto discovery of myStrom devices - proof of concept
+/**
+ * Auto discovery of myStrom devices
  * 
  * WiFi Switch v1 broadcasts itself over UPNP but I don't have such a device...
  */
 
+const myStrom = require('./myStrom');
+const EventEmitter = require('events').EventEmitter;
 const dgram = require('dgram');
-const socket = dgram.createSocket('udp4');
 
-const deviceTypes = new Map();
-deviceTypes.set(101, "WSW");
-deviceTypes.set(102, "WRB");
-deviceTypes.set(103, "WBP");
-deviceTypes.set(104, "WBS");
-deviceTypes.set(105, "WRS");
-deviceTypes.set(106, "WS2");
-deviceTypes.set(107, "WSE");
+class MyStromLocalDiscovery extends EventEmitter {
 
-socket.on('error', (err) => {
-  console.log(`Server error:\n${err.stack}`);
-  socket.close();
-});
-
-socket.on('message', (msg, rinfo) => {
-  if (rinfo.size !== 8) {
-    console.log('Invalid message size received: %d. Message:', rinfo.size, msg.toString('hex'));
-    return;
+  constructor(listenAddress) {
+    super();
+    this.listenAddress = listenAddress;
+    this.socket = undefined;
   }
 
-  let mac = msg.slice(0, 6);
-  let deviceType = msg[6];
-  //let flags = msg[7];
+  start() {
+    if (this.socket && this.socket._receiving === true) {
+      return;
+    }
+    this.socket = dgram.createSocket('udp4');
+    this.socket.bind(7979, this.address);
 
-  console.log('myStrom device %s with MAC address %s and IP %s', deviceTypes.get(deviceType), mac.toString('hex'), rinfo.address);
-});
+    this.socket.on('listening', () => {
+      const address = this.socket.address();
+      console.log(`Listening for myStrom UDP broadcast on ${address.address}:${address.port}`);
+      this.emit('start');
+    });
+    this.socket.on('close', () => this.emit('stop'));
+    this.socket.on('error', (err) => this.emit('error', err));
+    this.socket.on('message', (msg, rinfo) => {
+      if (rinfo.size !== 8) {
+        console.log('Ignoring invalid message of size: %d. Message:', rinfo.size, msg.toString('hex'));
+        return;
+      }
 
-socket.on('listening', () => {
-  const address = socket.address();
-  console.log(`Listening for myStrom UDP broadcast on ${address.address}:${address.port}`);
-});
+      let mac = msg.slice(0, 6).toString('hex');
+      let deviceType = myStrom.DEVICE_ID_MAP.get(msg[6]);
+      //let flags = msg[7];  // to be reverse engineered! Unfortunately it's not the power state :(
 
-let address = "0.0.0.0"; // or set to specific host adapter address
-socket.bind(7979, address);
+      this.emit('discover', { id: mac, ip: rinfo.address, type: deviceType, lastActivity: Date.now(), reachable: true });
+    });
+  }
+
+  stop() {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = undefined;
+    }
+  }
+}
+
+module.exports = MyStromLocalDiscovery;

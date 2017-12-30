@@ -18,7 +18,7 @@
             "type": "node",
             "request": "launch",
             "name": "myStrom Discovery",
-            "program": "${workspaceFolder}/myStromLocalDiscovery.js"
+            "program": "${workspaceFolder}/discoveryClient.js"
         }
     ]
 }
