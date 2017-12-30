@@ -67,6 +67,7 @@ class MyStromLocalService {
   }
 
   setPowerState(deviceId, value) {
+    // TODO use proxy instead of copy paste
     return new BluePromise((resolve, reject) => {
       const device = this.deviceState.getClientObjectIfReachable(deviceId);
       if (!device) {
@@ -84,6 +85,7 @@ class MyStromLocalService {
   }
 
   powerToggle(deviceId) {
+    // TODO use proxy instead of copy paste
     return new BluePromise((resolve, reject) => {
       const device = this.deviceState.getClientObjectIfReachable(deviceId);
       if (!device) {
