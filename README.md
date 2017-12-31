@@ -38,7 +38,7 @@ npm install
 ```
 
 ## Configuration
-**Edit the config.json file to adjust the driver settings** 
+**Edit the ./config/driver.json file to adjust the driver settings** 
  - neeo.brainIp : IP address of the NEEO brain (optional).
 
    Auto discovery is active if not specified. 
@@ -50,7 +50,7 @@ npm install
 
  - neeo.callbackPort : local port number for device server
 
-**Edit the config-mystrom.json file to configure myStrom devices**
+**Edit the ./config/mystrom.json file to configure myStrom devices**
  - mystrom.devices : array of WiFi Switch configurations:
    - id : unique device ID
 

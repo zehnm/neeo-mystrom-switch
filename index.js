@@ -24,8 +24,8 @@
  */
 
 const neeoapi = require('neeo-sdk');
-const controller = require('./controller');
-const constants = require('./constants');
+const controller = require('./lib/controller');
+const constants = require('./lib/constants');
 
 // default configuration with required parameters. Customize in config.json
 // Optional: neeo.brainIp, neeo.callbackIp
@@ -40,7 +40,7 @@ console.log('------------------------------------------');
 
 // Config file is optional
 try {
-  config = require(__dirname + '/config.json');
+  config = require(__dirname + '/config/driver.json');
 } catch (e) {
   console.warn('WARNING: Cannot find config.json! Using default values.');
 }

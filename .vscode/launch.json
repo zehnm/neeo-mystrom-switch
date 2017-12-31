@@ -8,7 +8,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Driver",
             "program": "${workspaceFolder}/index.js",
             "env": {
                 "DEBUG": "zehnm:*"

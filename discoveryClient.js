@@ -3,8 +3,8 @@
 /**
  * Test client for myStrom device discovery feature
  */
-const myStromDiscovery = require('./myStromLocalDiscovery');
-const discoveryControllerFactory = require('./discoveryController');
+const myStromDiscovery = require('./lib/mystrom/local/discovery');
+const discoveryControllerFactory = require('./lib/mystrom/discoveryController');
 
 
 let discovery = new myStromDiscovery("0.0.0.0");
