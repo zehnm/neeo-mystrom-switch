@@ -1,21 +1,17 @@
 {
   "mystrom": {
-    "cloud": {
-      "readme": "not yet implemented",
-      "endpoint": "https://www.mystrom.ch/mobile/"
-    },
     "devices": [
       {
-        "id": "switch-office",
+        "id": "30aea400112233",
         "name": "Office",
         "type": "switch",
-        "host": "myStrom-Switch-000001"
+        "host": "192.168.1.180"
       },
       {
-        "id": "switch-tv",
+        "id": "30aea400112244",
         "name": "TV",
         "type": "switch",
-        "host": "myStrom-Switch-000002"
+        "host": "192.168.1.181"
       }
     ]
   }

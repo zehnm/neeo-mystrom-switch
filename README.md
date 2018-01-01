@@ -1,6 +1,7 @@
 # NEEO driver for myStrom WiFi Switch
 Control [myStrom WiFi Switches](https://mystrom.ch/wifi-switch/) with [NEEO remote](https://neeo.com).
-Devices must be configured in config-mystrom.json. Auto-discovery and cloud connectivity are not yet implemented.
+
+WiFi Switch v2 devices are auto-discovered on local subnet. Manual configuration is possible in config/mystrom.json.
 
 Tested with:
  - Node.js v8.9.1
@@ -17,7 +18,10 @@ Tested with:
  - Also works with my [Raspberry Pi power switch](https://github.com/zehnm/pi-power-switch)
 
 ### TODO
- - auto discovery feature - will be implemented soon™
+ - clean up code, better modularization, slim down index.js
+ - allow mixed discovery (auto-discovery & config file)
+ - device name resolution from config file (id (MAC) -> name)
+ - auto discovery feature of v1 WiFi switches (the ones without temperature sensor)
  - option to use myStrom cloud (either for initial discovery only or for full device access)
  - setting device reachability flag with connectivity test
  - improved error & auto retry handling
@@ -39,23 +43,28 @@ npm install
 
 ## Configuration
 **Edit the ./config/driver.json file to adjust the driver settings** 
- - neeo.brainIp : IP address of the NEEO brain (optional).
+ - neeo
+   - brainIp : IP address of the NEEO brain (optional).
 
-   Auto discovery is active if not specified. 
-   See issue: https://github.com/NEEOInc/neeo-sdk/issues/36
+     Auto discovery is active if not specified. 
+     See issue: https://github.com/NEEOInc/neeo-sdk/issues/36
 
- - neeo.callbackIp : IP address of machine running the driver (optional).
+   - callbackIp : IP address of machine running the driver (optional).
 
-   Most likely required if auto discovery doesn't work.
+     Most likely required if auto discovery doesn't work.
 
- - neeo.callbackPort : local port number for device server
+   - callbackPort : local port number for device server
+ - mystrom.discoveryModes
+   - configFile : true = read devices from configration file
+   - local : true = local discovery mode (listen for UDP broadcast)
+ - mystrom.localDiscovery : configuration section if mystrom.discoveryModes.local = true
+   - listenAddress    : listen address for UDP broadcast. 0.0.0.0 = all interfaces
+   - reachableTimeout : timeout in seconds to consider a device offline if no discovery message received
+   - deviceTypeFilter : only consider the specified myStrom device types
 
-**Edit the ./config/mystrom.json file to configure myStrom devices**
+**Edit the ./config/mystrom.json file to manually configure myStrom devices**
  - mystrom.devices : array of WiFi Switch configurations:
-   - id : unique device ID
-
-     MAC address should be used for future auto-discovery feature (e.g. 30aea400112233) to support id -> name mapping
-
+   - id : MAC address (e.g. 30aea400112233)
    - name : displayed name in NEEO
    - type : static value "switch"
 

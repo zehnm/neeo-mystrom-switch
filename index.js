@@ -5,13 +5,13 @@
  * https://github.com/zehnm/neeo-mystrom-switch
  *
  * Control local myStrom WiFi switches with NEEO.
- * Devices must be configured in config-mystrom.json. Auto-discovery and cloud
- * connectivity are not yet implemented.
+ * WiFi Switch v2 devices are auto-discovered on local subnet. 
+ * Manual configuration is possible in config/mystrom.json.
  * 
  * Attention: it works BUT it's far from production ready!
  * Needs some improvements:
+ * - clean up of poc code, better modularization, slim down index.js
  * - error & auto retry handling
- * - auto discovery feature
  * - option to use myStrom cloud (either for initial discovery only or for full device access)
  * - setting device reachability flag with connectivity test
  * - more efficient polling
@@ -24,14 +24,30 @@
  */
 
 const neeoapi = require('neeo-sdk');
-const controller = require('./lib/controller');
+const Controller = require('./lib/controller');
 const constants = require('./lib/constants');
+const MyStromLocalDiscovery = require('./lib/mystrom/local/discovery');
+const MyStromConfigFileDiscovery = require('./lib/mystrom/configFileDiscovery');
+const discoveryControllerFactory = require('./lib/mystrom/discoveryController');
+const MyStromService = require('./lib/mystrom/service');
+const MyStromLocalSwitch = require('./lib/mystrom/local/switch');
 
-// default configuration with required parameters. Customize in config.json
+// default configuration with required parameters. Customize in driver.json
 // Optional: neeo.brainIp, neeo.callbackIp
 var config = {
   "neeo": {
     "callbackPort": 6336
+  },
+  "mystrom": {
+    "discoveryModes": {
+      "configFile": false,  // read devices from configration file
+      "local": true         // local discovery mode (listen for UDP broadcast)
+    },
+    "localDiscovery": {
+      "listenAddress": "0.0.0.0", // listen address for UDP broadcast. 0.0.0.0 = all interfaces
+      "reachableTimeout": 30,     // timeout in seconds to consider a device offline if no discovery message received
+      "deviceTypeFilter": ["WS2"] // only consider the specified myStrom device types
+    }
   }
 };
 
@@ -45,9 +61,13 @@ try {
   console.warn('WARNING: Cannot find config.json! Using default values.');
 }
 
+const controller = buildController(config);
+
 const discoveryInstructions = {
   headerText: 'Device Discovery',
-  description: 'Auto discovery not yet implemented... myStrom WiFi switches must be specified in the configuration file config-mystrom.json of the driver. Press Next when ready!'
+  description: config.mystrom.discoveryModes.local === true ?
+    'myStrom WiFi switches v2 are auto discovered on local subnet. Device discovery broadcast is every 5 seconds. Press Next when ready!'
+    : 'Auto discovery is not enabled... myStrom WiFi switches must be specified in the configuration file config/mystrom.json of the driver. Press Next when ready!'
 };
 const powerConsumptionSensor = {
   name: constants.COMPONENT_POWER_SENSOR,
@@ -65,9 +85,14 @@ const switchDevice = neeoapi.buildDevice('WiFi Switch')
   .addButton({ name: constants.MACRO_POWER_TOGGLE, label: 'Power Toggle' })
   .addButtonHandler(controller.onButtonPressed)
 
-  .addSwitch({ name: constants.COMPONENT_POWER_SWITCH, label: 'Power switch' }, controller.powerSwitchCallback)
+  .addSwitch({ name: constants.COMPONENT_POWER_SWITCH, label: 'Power switch' }, {
+    setter: controller.setPowerState,
+    getter: controller.getPowerState,
+  })
   .addTextLabel({ name: constants.COMPONENT_POWER_LABEL, label: 'Current consumption' }, controller.powerConsumption)
-  .addSensor(powerConsumptionSensor, controller.powerConsumptionSensorCallback)
+  .addSensor(powerConsumptionSensor, {
+    getter: controller.getPowerConsumption
+  })
 
   .enableDiscovery(discoveryInstructions, controller.discoverDevices)
   .registerSubscriptionFunction(controller.registerStateUpdateCallback)
@@ -118,4 +143,34 @@ function startDeviceServer(brain, port, callbackBaseurl) {
       console.error('FATAL [NEEO] Error starting device server!', error.message);
       process.exit(9);
     });
+}
+
+// FIXME quick and dirty builder
+function buildController(config) {
+  let discovery = undefined;
+  let deviceBuilder = undefined;
+
+  // TODO allow mixed discovery (auto-discovery & config file)
+  if (config.mystrom.discoveryModes.local === true) {
+    discovery = new MyStromLocalDiscovery(config.mystrom.localDiscovery.listenAddress);
+    deviceBuilder = (device) => {
+      // TODO device name resolution from config file (id (MAC) -> name)
+      return MyStromLocalSwitch.buildInstance(device.id, device.ip, device.type + ' ' + device.id);
+    }
+  } else if (config.mystrom.discoveryModes.configFile === true) {
+    discovery = new MyStromConfigFileDiscovery(__dirname + '/config/mystrom.json');
+    deviceBuilder = (device) => {
+      return MyStromLocalSwitch.buildInstance(device.id, device.ip, device.name);
+    }
+  } else {
+    console.error('FATAL Invalid configuration! One of mystrom.discoveryModes.local or mystrom.discoveryModes.configFile must be enabled.');
+    process.exit(1);
+  }
+
+  const discoveryController = discoveryControllerFactory(discovery, config.mystrom.localDiscovery);
+  const myStromService = new MyStromService(discoveryController, deviceBuilder);
+  const controller = Controller(myStromService, discoveryController, {});
+  discoveryController.startDiscovery();
+
+  return controller;
 }

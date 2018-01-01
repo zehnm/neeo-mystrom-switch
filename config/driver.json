@@ -3,5 +3,17 @@
     "brainIp": "192.168.1.172",
     "callbackIp": "192.168.1.165",
     "callbackPort": 6338
+  },
+  "mystrom": {
+    "discoveryModes": {
+      "configFile": false,
+      "local": true
+    },
+    "localDiscovery": {
+      "listenAddress": "0.0.0.0",
+      "reachableTimeout": 30,
+      "deviceTypeFilter": ["WS2"]
+    }
   }
+
 }
