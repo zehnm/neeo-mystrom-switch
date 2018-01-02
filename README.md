@@ -20,7 +20,6 @@ Tested with:
 ### TODO
  - clean up code, better modularization, slim down index.js
  - allow mixed discovery (auto-discovery & config file)
- - device name resolution from config file (id (MAC) -> name)
  - auto discovery feature of v1 WiFi switches (the ones without temperature sensor)
  - option to use myStrom cloud (either for initial discovery only or for full device access)
  - setting device reachability flag with connectivity test
@@ -42,7 +41,8 @@ npm install
 ```
 
 ## Configuration
-**Edit the ./config/driver.json file to adjust the driver settings** 
+### Driver settings
+Edit the ./config/driver.json file to adjust the driver settings:
  - neeo
    - brainIp : IP address of the NEEO brain (optional).
 
@@ -62,7 +62,8 @@ npm install
    - reachableTimeout : timeout in seconds to consider a device offline if no discovery message received
    - deviceTypeFilter : only consider the specified myStrom device types
 
-**Edit the ./config/mystrom.json file to manually configure myStrom devices**
+### Device configuration
+Edit the ./config/mystrom.json file to either manually configure myStrom devices or define the MAC address to device name mapping in auto-discovery mode:
  - mystrom.devices : array of WiFi Switch configurations:
    - id : MAC address (e.g. 30aea400112233)
    - name : displayed name in NEEO
@@ -72,7 +73,11 @@ npm install
 
    - host : IP or host name with optional port number
 
+     Only required if auto-discovery is not used.
+
      Assigning a static IP lease in your router is recommended.
+
+**Attention:** once a device is used in NEEO the id is stored in the brain and cannot be changed anymore. I.e. the device must be deleted and re-added again.
 
 ## Start the driver
 

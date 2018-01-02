@@ -4,14 +4,12 @@
       {
         "id": "30aea400112233",
         "name": "Office",
-        "type": "switch",
-        "host": "192.168.1.180"
+        "type": "switch"
       },
       {
         "id": "30aea400112244",
         "name": "TV",
-        "type": "switch",
-        "host": "192.168.1.181"
+        "type": "switch"
       }
     ]
   }
