@@ -31,7 +31,8 @@ const MyStromConfigFileDiscovery = require('./lib/mystrom/configFileDiscovery');
 const discoveryControllerFactory = require('./lib/mystrom/discoveryController');
 const MyStromService = require('./lib/mystrom/service');
 const MyStromLocalSwitch = require('./lib/mystrom/local/switch');
-const DeviceIdMapper = require('./lib/deviceIdMapper');
+const DeviceConfiguration = require('./lib/mystrom/deviceConfiguration');
+const DeviceIdMapper = require('./lib/mystrom/deviceIdMapper');
 
 // default configuration with required parameters. Customize in driver.json
 // Optional: neeo.brainIp, neeo.callbackIp
@@ -150,7 +151,8 @@ function startDeviceServer(brain, port, callbackBaseurl) {
 function buildController(config) {
   let discovery = undefined;
   let deviceBuilder = undefined;
-  const nameMapper = new DeviceIdMapper(__dirname + '/config/mystrom.json', 'switch');
+  const deviceCfg = new DeviceConfiguration(__dirname + '/config/mystrom.json');
+  const nameMapper = new DeviceIdMapper(deviceCfg);
 
   // TODO allow mixed discovery (auto-discovery & config file)
   if (config.mystrom.discoveryModes.local === true) {
@@ -159,7 +161,7 @@ function buildController(config) {
       return MyStromLocalSwitch.buildInstance(device.id, device.ip, nameMapper.getName(device));
     }
   } else if (config.mystrom.discoveryModes.configFile === true) {
-    discovery = new MyStromConfigFileDiscovery(__dirname + '/config/mystrom.json');
+    discovery = new MyStromConfigFileDiscovery(deviceCfg);
     deviceBuilder = (device) => {
       return MyStromLocalSwitch.buildInstance(device.id, device.ip, device.name);
     }
