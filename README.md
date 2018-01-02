@@ -10,16 +10,20 @@ Tested with:
 ## Features
  - Device type: Accessory
 
-   If you prefer 'NEEO light style recipes' for the power switches: change index.js to .setType('LIGHT')
+   If you prefer 'NEEO light style recipes' for the power switches: change ./lib/neeoDevice.js to .setType('LIGHT')
 
+ - Auto discovery of v2 WiFi switches
  - Power on / off / toggle buttons, power switch
- - Power consumption is exposed as sensor value and text field.
+ - Power consumption is exposed as sensor value and text field
  - Local mode only: driver communicates directly with WiFi switch.
  - Also works with my [Raspberry Pi power switch](https://github.com/zehnm/pi-power-switch)
 
 ### TODO
- - clean up code, better modularization, slim down index.js
+For initial v0.1.0 release:
+ - clean up code, better modularization
  - allow mixed discovery (auto-discovery & config file)
+
+Afterwards: 
  - auto discovery feature of v1 WiFi switches (the ones without temperature sensor)
  - option to use myStrom cloud (either for initial discovery only or for full device access)
  - setting device reachability flag with connectivity test
