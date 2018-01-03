@@ -10,7 +10,7 @@
  * 
  * Attention: it works BUT it's far from production ready!
  * Needs some improvements:
- * - clean up of poc code, better modularization, slim down index.js
+ * - clean up of poc code, better modularization
  * - error & auto retry handling
  * - option to use myStrom cloud (either for initial discovery only or for full device access)
  * - setting device reachability flag with connectivity test
@@ -24,7 +24,10 @@
  */
 
 const neeoapi = require('neeo-sdk');
-const NeeoDevice = require('./lib/neeoDevice')
+const logger = require('winston');
+const NeeoDevice = require('./lib/neeoDevice');
+
+logger.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
 
 // default configuration with required parameters. Customize in driver.json
 // Optional: neeo.brainIp, neeo.callbackIp
@@ -45,14 +48,14 @@ var config = {
   }
 };
 
-console.log('NEEO device "myStrom WiFi Switch" PoC');
+console.log('NEEO device "myStrom WiFi Switch"');
 console.log('------------------------------------------');
 
 // Config file is optional
 try {
   config = require(__dirname + '/config/driver.json');
 } catch (e) {
-  console.warn('WARNING: Cannot find or load config.json! Using default values.');
+  logger.warn('Cannot find or load config.json! Using default values.');
 }
 
 const neeoDevices = [];
@@ -64,10 +67,10 @@ var brainIp = process.env.BRAINIP;
 var baseurl = undefined;
 
 if (brainIp) {
-  console.log('[NEEO] Using NEEO Brain IP from env variable: ', brainIp);
+  logger.info('[NEEO] Using NEEO Brain IP from env variable:', brainIp);
 } else if (config.neeo.brainIp) {
   brainIp = config.neeo.brainIp;
-  console.log('[NEEO] Using NEEO Brain IP from configuration: ', brainIp);
+  logger.info('[NEEO] Using NEEO Brain IP from configuration:', brainIp);
 }
 
 // baseurl must be set for certain network setup (i.e. Windows with Hyper-V) until SDK is fixed.
@@ -79,16 +82,16 @@ if (config.neeo.callbackIp) {
 if (brainIp) {
   startDeviceServer(brainIp, config.neeo.callbackPort, baseurl, neeoDevices);
 } else {
-  console.log('[NEEO] discover one NEEO Brain...');
+  logger.info('[NEEO] discover one NEEO Brain...');
   neeoapi.discoverOneBrain()
     .then((brain) => {
-      console.log('[NEEO] Brain discovered:', brain.name, baseurl);
+      logger.info('[NEEO] Brain discovered:', brain.name);
       startDeviceServer(brain, config.neeo.callbackPort, baseurl, neeoDevices);
     });
 }
 
 function startDeviceServer(brain, port, callbackBaseurl, neeoDevices) {
-  console.log('[NEEO] Starting server on port %d ...', port);
+  logger.info('[NEEO] Starting server on port %d ...', port);
   neeoapi.startServer({
     brain,
     port,
@@ -97,10 +100,10 @@ function startDeviceServer(brain, port, callbackBaseurl, neeoDevices) {
     devices: neeoDevices
   })
     .then(() => {
-      console.log('[NEEO] API server ready! Use the NEEO app to search for "myStrom WiFi Switch".');
+      logger.info('[NEEO] API server ready! Use the NEEO app to search for "myStrom WiFi Switch".');
     })
     .catch((error) => {
-      console.error('FATAL [NEEO] Error starting device server!', error.message);
+      logger.error('[NEEO] Error starting device server!', error.message);
       process.exit(9);
     });
 }

@@ -9,15 +9,18 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Driver",
+            //"console": "integratedTerminal", // https://github.com/Microsoft/vscode/issues/19750
+            "outputCapture": "std",
             "program": "${workspaceFolder}/index.js",
             "env": {
-                "DEBUG": "zehnm:*"
+                "LOG_LEVEL": "debug"
             }
         },
         {
             "type": "node",
             "request": "launch",
             "name": "myStrom Discovery",
+            "outputCapture": "std",
             "program": "${workspaceFolder}/discoveryClient.js"
         }
     ]

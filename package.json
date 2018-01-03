@@ -6,7 +6,8 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "neeo-sdk": "*",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "winston": "^2.4.0"
   },
   "engines": {
     "node": ">=6.12.0"
