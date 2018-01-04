@@ -8,9 +8,8 @@
  * WiFi Switch v2 devices are auto-discovered on local subnet. 
  * Manual configuration is possible in config/mystrom.json.
  * 
- * Attention: it works BUT it's far from production ready!
- * Needs some improvements:
- * - clean up of poc code, better modularization
+ * Still needs some improvements:
+ * - code clean up, better modularization
  * - error & auto retry handling
  * - option to use myStrom cloud (either for initial discovery only or for full device access)
  * - setting device reachability flag with connectivity test
@@ -55,7 +54,7 @@ console.log('------------------------------------------');
 try {
   config = require(__dirname + '/config/driver.json');
 } catch (e) {
-  logger.warn('Cannot find or load config.json! Using default values.');
+  logger.info('Cannot find or load config.json! Using default values.');
 }
 
 const neeoDevices = [];
