@@ -147,6 +147,7 @@ Configuration format:
  - WiFi Switch MAC address mapping to device names
  - Manual configuration of a WiFi switch on another network
  - Manual configuration of a [Raspberry Pi power switch](https://github.com/zehnm/pi-power-switch)
+
 ```json
 {
   "mystrom": {
@@ -175,7 +176,8 @@ Configuration format:
       }
     ]
   }
-}```
+}
+```
 
 ## Start the driver
 
