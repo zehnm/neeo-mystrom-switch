@@ -24,6 +24,7 @@
 
 const neeoapi = require('neeo-sdk');
 const logger = require('winston');
+const Constants = require('./lib/constants');
 const NeeoDevice = require('./lib/neeoDevice');
 
 logger.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
@@ -60,7 +61,7 @@ try {
 const neeoDevices = [];
 const neeoSwitchDevice = new NeeoDevice(config);
 
-neeoDevices.push(neeoSwitchDevice.buildDevice('WiFi Switch', 'myStrom'));
+neeoDevices.push(neeoSwitchDevice.buildDevice(Constants.DEVICE_NAME, Constants.MANUFACTURER));
 
 var brainIp = process.env.BRAINIP;
 var baseurl = undefined;
@@ -85,6 +86,7 @@ if (brainIp) {
   neeoapi.discoverOneBrain()
     .then((brain) => {
       logger.info('[NEEO] Brain discovered:', brain.name);
+      brainIp = brain; // save discovered IP for shutdown hook
       startDeviceServer(brain, config.neeo.callbackPort, baseurl, neeoDevices);
     });
 }
@@ -95,14 +97,39 @@ function startDeviceServer(brain, port, callbackBaseurl, neeoDevices) {
     brain,
     port,
     baseurl: callbackBaseurl,
-    name: 'mystrom-wifi-switch',
+    name: Constants.ADAPTER_NAME,
     devices: neeoDevices
   })
     .then(() => {
-      logger.info('[NEEO] API server ready! Use the NEEO app to search for "myStrom WiFi Switch".');
+      logger.info('[NEEO] API server ready! Use the NEEO app to search for "%s" or "%s".', Constants.MANUFACTURER, Constants.DEVICE_NAME);
     })
     .catch((error) => {
       logger.error('[NEEO] Error starting device server!', error.message);
       process.exit(9);
     });
 }
+
+// shutdown hook for graceful shutdown
+var gracefulShutdown = function() {
+  logger.verbose("Received kill signal, shutting down gracefully.");
+  neeoapi.stopServer({brain: brainIp, name: Constants.ADAPTER_NAME})
+    .then(() => {
+      logger.info('[NEEO] Stopped and unregistered device server');
+      process.exit();
+    })
+    .catch((error) => {
+      logger.warn('[NEEO] Error while stopping and unregistering device server:', error);
+      process.exit();
+    });
+  
+   // force exit after 10s 
+   setTimeout(function() {
+       logger.error("Could not stopping NEEO device driver in time, forcefully shutting down");
+       process.exit();
+  }, 10000);
+}
+
+// listen for TERM signal .e.g. kill 
+process.on ('SIGTERM', gracefulShutdown);
+// listen for INT signal e.g. Ctrl-C
+process.on ('SIGINT', gracefulShutdown); 
