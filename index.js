@@ -13,7 +13,6 @@
  * - error & auto retry handling
  * - option to use myStrom cloud (either for initial discovery only or for full device access)
  * - setting device reachability flag with connectivity test
- * - more efficient polling
  * ... and I don't like Java Script, so certain things are probably not best practice :/
  * 
  * Tested with:
@@ -30,7 +29,7 @@ const NeeoDevice = require('./lib/neeoDevice');
 logger.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
 
 // default configuration with required parameters. Customize in driver.json
-// Optional: neeo.brainIp, neeo.callbackIp
+// Optional: neeo.brainIp, neeo.callbackIp, mystrom.polling.interval, mystrom.polling.duration
 var config = {
   "neeo": {
     "callbackPort": 6336

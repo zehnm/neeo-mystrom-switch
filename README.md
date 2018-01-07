@@ -19,17 +19,17 @@ Tested with:
  - Also works with my [Raspberry Pi power switch](https://github.com/zehnm/pi-power-switch)
 
 ### TODO
-For initial v0.1.0 release:
+For initial v0.1.0 release (real soon™):
  - [ ] some more testing and documentation
  - [ ] clean up code, better modularization
  - [x] allow mixed discovery (auto-discovery & config file)
+ - [x] more efficient polling
 
 Afterwards: 
  - auto discovery feature of v1 WiFi switches (the ones without temperature sensor)
  - option to use myStrom cloud (either for initial discovery only or for full device access)
  - setting device reachability flag with connectivity test
  - improved error & auto retry handling
- - more efficient polling
 
 ## Requirements
  - Node.js >= v6.12 (https://nodejs.org)
@@ -69,6 +69,11 @@ Configuration options:
    - listenAddress    : listen address for UDP broadcast. 0.0.0.0 = all interfaces
    - reachableTimeout : timeout in seconds to consider a device offline if no discovery message received
    - deviceTypeFilter : only consider the specified myStrom device types (at the moment only "WS2" is supported)
+ - mystrom.polling : device polling configuration. Polling is not required but useful if you also control the devices with the myStrom app and would like a faster synchronization with NEEO.
+   - interval : optional polling interval in seconds. 0 = disable device polling, default = 4
+   - duration : optional time duration in seconds to perform polling after activity has been detected. default = 60
+
+     Note: to perform a single status update withouth further polling after NEEO requests the device state, set duration < interval. E.g. duration = 1
 
 #### Example: Default Configuration
  - auto discover NEEO brain
@@ -186,7 +191,7 @@ node index.js
 ```
 
 ### Logging Level
-The logging level can be specified in the environment variable `LOG_LEVEL`. Valid values are: error, warn, info, debug. The default level is info.
+The logging level can be specified in the environment variable `LOG_LEVEL`. Valid values are: error, warn, info, debug, silly. The default level is info.
 
 ```
 LOG_LEVEL=debug node index.js 
