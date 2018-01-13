@@ -9,16 +9,16 @@
  * Manual configuration is possible in config/mystrom.json.
  * 
  * Still needs some improvements:
- * - code clean up, better modularization
+ * - code clean up (module exports, naming conventions etc.)
  * - error & auto retry handling
  * - option to use myStrom cloud (either for initial discovery only or for full device access)
  * - setting device reachability flag with connectivity test
- * ... and I don't like Java Script, so certain things are probably not best practice :/
+ * ... and I really don't like Java Script, so certain things are probably a bit messy :/
  * 
  * Tested with:
  * - Node.js v8.9.1
  * - NEEO SDK 0.48.13 https://github.com/NEEOInc/neeo-sdk
- * - myStrom WiFi Switch v2 (firmware 3.60) https://www.mystrom.ch/
+ * - myStrom WiFi Switch v2 (firmware 3.60) and v1 (firmware 2.31) https://www.mystrom.ch/
  */
 
 const neeoapi = require('neeo-sdk');
@@ -42,7 +42,7 @@ var config = {
     "localDiscovery": {
       "listenAddress": "0.0.0.0", // listen address for UDP broadcast. 0.0.0.0 = all interfaces
       "reachableTimeout": 30,     // timeout in seconds to consider a device offline if no discovery message received
-      "deviceTypeFilter": ["WS2"] // only consider the specified myStrom device types
+      "deviceTypeFilter": ["WS2"] // only consider the specified myStrom device types. See ./lib/mystrom/myStrom.js
     }
   }
 };
