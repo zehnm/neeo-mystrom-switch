@@ -1,5 +1,7 @@
 FROM node:9-alpine
 
+ENV LOG_LEVEL=info
+
 COPY *.j* /neeo-driver-mystrom/
 COPY config /neeo-driver-mystrom/config
 COPY lib /neeo-driver-mystrom/lib
