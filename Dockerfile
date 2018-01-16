@@ -1,13 +1,14 @@
 FROM node:9-alpine
 
-USER node:node
-
-COPY --chown=node:node *.j* /neeo-driver-mystrom/
-COPY --chown=node:node config /neeo-driver-mystrom/config
-COPY --chown=node:node lib /neeo-driver-mystrom/lib
+COPY *.j* /neeo-driver-mystrom/
+COPY config /neeo-driver-mystrom/config
+COPY lib /neeo-driver-mystrom/lib
 
 RUN cd /neeo-driver-mystrom && \
-    npm install
+    npm install && \
+    chown -R node:node *
+
+USER node:node
 
 VOLUME ["/neeo-driver-mystrom/config"]
 
