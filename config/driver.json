@@ -1,8 +1,6 @@
 {
   "neeo": {
-    "brainIp": "192.168.1.172",
-    "callbackIp": "192.168.1.165",
-    "callbackPort": 6338
+    "callbackPort": 6336
   },
   "mystrom": {
     "discoveryModes": {
