@@ -1,6 +1,6 @@
 {
   "name": "neeo-mystrom-switch",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "This driver adds myStrom WiFi Switch support to NEEO",
   "main": "index.js",
   "dependencies": {

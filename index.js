@@ -47,7 +47,7 @@ var config = {
   }
 };
 
-console.log('NEEO device "myStrom WiFi Switch"');
+console.log('NEEO device "myStrom WiFi Switch" v0.1.0');
 console.log('------------------------------------------');
 
 // Config file is optional

@@ -13,20 +13,15 @@ Tested with:
    If you prefer 'NEEO light style recipes' for the power switches: change ./lib/neeoDevice.js to .setType('LIGHT')
 
  - Auto discovery of v2 WiFi switches
+ - Optional manual configuration for v1 WiFi switches or different networks 
  - Power on / off / toggle buttons, power switch
  - Power consumption is exposed as sensor value and text field
  - Local mode only: driver communicates directly with WiFi switch.
  - Also works with my [Raspberry Pi power switch](https://github.com/zehnm/pi-power-switch)
+ - Available as ready to use docker image
 
 ### TODO
-For initial v0.1.0 release (real soon™):
- - [ ] some more testing and documentation
- - [ ] clean up code, better modularization
- - [x] allow mixed discovery (auto-discovery & config file)
- - [x] more efficient polling
-
-Afterwards: 
- - auto discovery feature of v1 WiFi switches (the ones without temperature sensor)
+ - auto discovery of v1 WiFi switches (the ones without temperature sensor)
  - option to use myStrom cloud (either for initial discovery only or for full device access)
  - setting device reachability flag with connectivity test
  - improved error & auto retry handling
@@ -195,4 +190,20 @@ The logging level can be specified in the environment variable `LOG_LEVEL`. Vali
 
 ```
 LOG_LEVEL=debug node index.js 
+```
+
+## Docker
+ - Based on `node:9-alpine`
+ - Auto-discovery only works on Linux with host networking 
+
+```
+docker run --rm --network=host zehnm/neeo-mystrom-switch:latest
+```
+
+ - Docker on OSX and Windows requires manual NEEO brain and myStrom device configuration with port mapping: `-p 6336:6336`
+ - Custom `driver.json` and `mystrom.json` files can be mapped in a local configuration directory with: `-v /MyDirectory/config:/neeo-driver-mystrom/config`
+ - `LOG_LEVEL` environment variable is also supported. E.g. `--env LOG_LEVEL=debug`
+
+```
+docker run --rm -p 6336:6336 --env LOG_LEVEL=debug -v ${CFG_PATH}/config:/neeo-driver-mystrom/config zehnm/neeo-mystrom-switch:latest
 ```
